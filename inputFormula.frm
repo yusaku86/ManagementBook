@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 Option Explicit
 Const INCREASE_COLUMN As Long = 5  'Œ‚Ì—ñ”Ô†‚©‚çŒ©‚Ä‘‰Á•ª‚ª‰½—ñ‰E‚É‚ ‚é‚©‚ğ•\‚·
 Const DECREASE_COLUMN As Long = 1 'Œ‚Ì—ñ”Ô†‚©‚çŒ©‚Äx•¥/“ü‹à‚ª‰½—ñ‰E‚É‚ ‚é‚©‚ğ•\‚·
@@ -20,15 +21,12 @@ Const OFFSET_COLUMN As Long = 3     'Œ‚Ì—ñ”Ô†‚©‚çŒ©‚Ä‘ŠE—ñ‚ª‰½—ñ‰E‚É‚ ‚é‚©‚ğ•
 Const FIRST_CELL_ROW As Long = 6    '“ü—Í‚ğŠJn‚·‚éƒZƒ‹‚Ìs”Ô†
 Const AMOUNT_ROW As Long = 4        '‡Œv‚Ì’l‚ª“ü—Í‚³‚ê‚Ä‚¢‚éƒZƒ‹‚Ìs”Ô†
 
-
-
 Private Sub cmb_cancel_Click()
     Unload Me
 End Sub
+
 'ƒƒCƒ“ƒvƒƒOƒ‰ƒ€
 Private Sub cmb_enter_Click()
-    '0 ‘Oˆ—&“ü—Í“à—eŠm”F
-    Application.Calculation = xlCalculationManual
     
     If cmb_month.Value = "" Then
         MsgBox "‘ÎÛŒ‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢!"
@@ -48,6 +46,7 @@ Private Sub cmb_enter_Click()
     
     '1 monthƒNƒ‰ƒXéŒ¾&ƒCƒ“ƒXƒ^ƒ“ƒX¶¬
     Dim mymonth As Month: Set mymonth = New Month
+    
     '1-1 w’èŒ‚Ì—ñ”Ô†æ“¾
     Dim monthColumn As Long: monthColumn = mymonth.monthColumn(Replace(cmb_month.Value, "Œ", ""))
     Set mymonth = Nothing
@@ -55,22 +54,22 @@ Private Sub cmb_enter_Click()
     '2 ƒ`ƒFƒbƒNƒ{ƒbƒNƒX u‘‰Á•ªv‚Éƒ`ƒFƒbƒN‚ª“ü‚Á‚Ä‚¢‚½‚ç‘‰Á•ª‚Ì®‚ğ“ü—ÍAux•¥/“ü‹àv‚Éƒ`ƒFƒbƒN‚ª“ü‚Á‚Ä‚¢‚½‚çx•¥/“ü‹à‚Ì®“ü—Í
     If chb_increase.Value = True Then
         If InputIncrease(monthColumn + INCREASE_COLUMN, Replace(cmb_month.Value, "Œ", "")) = True Then
-            MsgBox "ˆ—‚ªŠ®—¹‚µ‚Ü‚µ‚½"
+            MsgBox "ˆ—‚ªŠ®—¹‚µ‚Ü‚µ‚½", vbInformation, ThisWorkbook.name
         Else
             Exit Sub
         End If
     ElseIf chb_decrease.Value = True Then
         If InputDecrease(monthColumn, Replace(cmb_month.Value, "Œ", "")) = True Then
-            MsgBox "ˆ—‚ªŠ®—¹‚µ‚Ü‚µ‚½B"
+            MsgBox "ˆ—‚ªŠ®—¹‚µ‚Ü‚µ‚½B", vbInformation, ThisWorkbook.name
         Else
             Exit Sub
         End If
     End If
     
-    'ƒvƒƒOƒ‰ƒ€I—¹
-    Application.Calculation = xlCalculationAutomatic
     Unload Me
+    
 End Sub
+
 Private Sub UserForm_Initialize()
     'ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÉŒ‚ğ’Ç‰Á
     Dim i As Long
@@ -83,8 +82,12 @@ Private Sub UserForm_Initialize()
         Next
     End With
 End Sub
+
 'w’è‚ÌŒ‚Ì‘‰Á•ªƒZƒ‹‚É®‚ğ“ü—Í
 Private Function InputIncrease(ByVal monthColumn As Long, trgMonth As Long) As Boolean
+    
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
     
     'ƒƒbƒZ[ƒW•\¦
     Dim trgColumn As String: trgColumn = Replace(Cells(1, monthColumn).Address(True, False), "$1", "")   'w’èŒ‚Ì—ñ”Ô†‚ğƒAƒ‹ƒtƒ@ƒxƒbƒg‚É•ÏŠ·(ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚Åg—p)
@@ -111,9 +114,15 @@ Private Function InputIncrease(ByVal monthColumn As Long, trgMonth As Long) As B
     Next
     InputIncrease = True
     
+    Application.Calculation = xlCalculationAutomatic
+    
 End Function
+
 'w’è‚ÌŒ‚Ìx•¥/“ü‹à—ñ‚ÌƒZƒ‹‚É®“ü—Í
 Private Function InputDecrease(ByVal monthColumn As Long, ByVal trgMonth As Long) As Boolean
+    
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
     
     '1 ®‚ğ“ü—Í‚·‚é—ñ”Ô†‚ğƒRƒŒƒNƒVƒ‡ƒ“‚ÉŠi”[
     Dim trgColumn As Collection: Set trgColumn = New Collection
@@ -122,7 +131,9 @@ Private Function InputDecrease(ByVal monthColumn As Long, ByVal trgMonth As Long
         .Add monthColumn + DECREASE_COLUMN
         .Add monthColumn + OFFSET_COLUMN
     End With
+    
     Dim i As Long, msgColumn As String '®‚ğ“ü—Í‚·‚é—ñ”Ô†‚ğƒAƒ‹ƒtƒ@ƒxƒbƒg‚É•ÏŠ·‚µ‚½‚à‚Ì(ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚Åg—p)
+    
     For i = 1 To trgColumn.Count
         msgColumn = msgColumn & Replace(Cells(1, trgColumn(i)).Address(True, False), "$1", "") & "—ñ "
     Next
@@ -130,15 +141,19 @@ Private Function InputDecrease(ByVal monthColumn As Long, ByVal trgMonth As Long
     
     '2 ƒƒbƒZ[ƒW•\¦
     Dim ans As VbMsgBoxResult: ans = MsgBox(trgMonth & "Œx•¥/“ü‹à(" & msgColumn & ")‚É®‚ğ“ü—Í‚µ‚Ü‚·B" & vbLf & "Às‚µ‚Ä‚æ‚ë‚µ‚¢‚Å‚·‚©?", vbYesNo + vbQuestion)
+    
     If ans = vbNo Then
         InputDecrease = False
         Exit Function
     Else
-        If Cells(AMOUNT_ROW, monthColumn + DECREASE_COLUMN).Value <> 0 Or Cells(AMOUNT_ROW, monthColumn + OFFSET_COLUMN).Value <> 0 Then
-            ans = MsgBox("Šù‚É’l‚ª“ü—Í‚³‚ê‚Ä‚¢‚Ü‚·‚ªã‘‚«‚µ‚Ä‚æ‚ë‚µ‚¢‚Å‚·‚©?", vbYesNo + vbExclamation)
-            If ans = vbNo Then
-                InputDecrease = False
-                Exit Function
+        If chk_all.Value = True Then
+            If Cells(AMOUNT_ROW, monthColumn + DECREASE_COLUMN).Value <> 0 Or _
+                Cells(AMOUNT_ROW, monthColumn + OFFSET_COLUMN).Value <> 0 Then
+                ans = MsgBox("Šù‚É’l‚ª“ü—Í‚³‚ê‚Ä‚¢‚Ü‚·‚ªã‘‚«‚µ‚Ä‚æ‚ë‚µ‚¢‚Å‚·‚©?", vbYesNo + vbExclamation)
+                If ans = vbNo Then
+                    InputDecrease = False
+                    Exit Function
+                End If
             End If
         End If
     End If
@@ -146,11 +161,15 @@ Private Function InputDecrease(ByVal monthColumn As Long, ByVal trgMonth As Long
     '3 ®“ü—Í
     For i = FIRST_CELL_ROW To Cells(Rows.Count, 1).End(xlUp).Row
         With Cells(i, monthColumn)
-            .Formula = "=iferror(if(ƒ[ƒN!$f$1=" & trgMonth & ",vlookup(indirect(address(row(),1,1,1),1),ƒ[ƒN!a:e,5,0),""""),"""")"
-            .Offset(, DECREASE_COLUMN).Formula = "=iferror(if(ƒ[ƒN!$f$1=" & trgMonth & ",vlookup(indirect(address(row(),1,1,1),1),ƒ[ƒN!a:e,3,0),0),0)"
-            .Offset(, OFFSET_COLUMN).Formula = "=iferror(if(ƒ[ƒN!$f$1=" & trgMonth & ",vlookup(indirect(address(row(),1,1,1),1),ƒ[ƒN!a:e,4,0),0),0)"
+            If chk_partial.Value = False Or Not .Offset(, DECREASE_COLUMN).Value > 0 And Not .Offset(, OFFSET_COLUMN).Value > 0 Then
+                .Formula = "=iferror(if(ƒ[ƒN!$f$1=" & trgMonth & ",vlookup(indirect(address(row(),1,1,1),1),ƒ[ƒN!a:e,5,0),""""),"""")"
+                .Offset(, DECREASE_COLUMN).Formula = "=iferror(if(ƒ[ƒN!$f$1=" & trgMonth & ",vlookup(indirect(address(row(),1,1,1),1),ƒ[ƒN!a:e,3,0),0),0)"
+                .Offset(, OFFSET_COLUMN).Formula = "=iferror(if(ƒ[ƒN!$f$1=" & trgMonth & ",vlookup(indirect(address(row(),1,1,1),1),ƒ[ƒN!a:e,4,0),0),0)"
+            End If
         End With
     Next
     InputDecrease = True
+    
+    Application.Calculation = xlCalculationAutomatic
     
 End Function
