@@ -49,7 +49,7 @@ End Sub
 '// —ˆŠú•ª‚ÌŠÇ—’ ‚ğì¬‚·‚é
 Public Sub createNextYearChart(ByVal newFileName As String)
         
-'    Application.ScreenUpdating = False
+    Application.ScreenUpdating = False
     Application.DisplayAlerts = False
         
     '/**
@@ -110,7 +110,7 @@ Public Sub createNextYearChart(ByVal newFileName As String)
     newFile.Sheets(1).Activate
     Cells(1, 1).Select
     
-    newFile.Close
+    newFile.Close True
     
     Set newFile = Nothing
     
