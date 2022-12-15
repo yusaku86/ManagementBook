@@ -1,26 +1,40 @@
 Attribute VB_Name = "Module1"
 Option Explicit
 
+'// 増加分入力のフォーム起動
 Sub InputIncrease()
+
     f_increase.Show vbModeless
+
 End Sub
 
+'// 新規追加のフォーム起動
 Sub AddCustomer()
+
     name.Show
+
 End Sub
 
+'// 式入力のフォーム起動
 Sub InputCellsFormula()
+
     inputFormula.Show vbModeless
+
 End Sub
 
+'// 式入力のフォーム起動
 Sub QuantifyCells()
+
     quantification.Show vbModeless
+
 End Sub
 
+'// 漏れ入力のフォーム起動
 Sub ScanData()
     scan.Show
 End Sub
 
+'// 支払い/入金分のフォーム起動
 Sub InputDecrease()
     decrease.Show vbModeless
 End Sub
@@ -32,32 +46,24 @@ Sub openFormToCarriedForward()
 
 End Sub
 
-
 '// 来期分の管理帳を作成する
 Public Sub createNextYearChart(ByVal newFileName As String)
         
-    Application.ScreenUpdating = False
+'    Application.ScreenUpdating = False
     Application.DisplayAlerts = False
         
     '/**
-     '* ブックを一つ追加して次期分の管理帳を作成
+     '* このファイルのコピーを作成して来期分の管理帳にする
     '**/
-    
-    Dim newFile As Workbook: Set newFile = Workbooks.Add
-        
-    ThisWorkbook.Sheets("Sheet1").Copy after:=newFile.Sheets(1)
-    newFile.Sheets(1).Delete
-    newFile.Sheets(1).name = "Sheet1"
-    
-    
-    Dim lastRow As Long: lastRow = Cells(Rows.Count, 1).End(xlUp).Row
-    
-    newFile.Sheets(1).Activate
-
+    ThisWorkbook.SaveCopyAs newFileName
+    Dim newFile As Workbook: Set newFile = Workbooks.Open(newFileName)
+            
     '// オートフィルターがかかってる場合は解除
-    If newFile.Sheets(1).AutoFilterMode = True Then
+    If ActiveSheet.AutoFilterMode = True Then
         Cells(1, 1).AutoFilter
     End If
+
+    Dim lastRow As Long: lastRow = Cells(Rows.Count, 1).End(xlUp).Row
 
     '// 前期末残高をコピーして期首残高に貼り付け
     Range(Cells(6, 111), Cells(lastRow, 111)).Copy
@@ -101,14 +107,12 @@ Public Sub createNextYearChart(ByVal newFileName As String)
           
     Cells(1, 2).ClearContents
     
-    ThisWorkbook.Sheets("ワーク").Copy after:=newFile.Sheets(newFile.Sheets.Count)
-    ThisWorkbook.Sheets("ワーク2").Copy after:=newFile.Sheets(newFile.Sheets.Count)
-    
     newFile.Sheets(1).Activate
     Cells(1, 1).Select
     
-    newFile.SaveAs newFileName, xlOpenXMLWorkbookMacroEnabled
     newFile.Close
+    
+    Set newFile = Nothing
     
     MsgBox "管理帳の繰越が完了しました。", vbInformation, "管理帳繰越"
     
